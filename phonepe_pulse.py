@@ -30,7 +30,6 @@ if main == "About":
     st.write("Email Id: tkkrathna26@gmail.com")
     st.write("Linkedin Id: https://www.linkedin.com/in/rathna-mari-041aa4251")
   
-
 if main== "Visualization":
    with st.sidebar:
       main1 = option_menu(None, ["Transactions","Users"],menu_icon='cast')
@@ -45,21 +44,24 @@ if main== "Visualization":
           year = st.selectbox("Year",Topic)
           Topic = ["1","2","3","4"]
           quarter = st.selectbox("Quarter",Topic)
-
+          Topic = ['ladakh','nagaland''chhattisgarh','jammu-&-kashmir','gujarat','lakshadweep','uttarakhand','punjab','chandigarh','maharashtra',
+                          'jharkhand','delhi','kerala','tamil-nadu','meghalaya', 'puducherry', 'himachal-pradesh','mizoram','manipur','rajasthan',
+                          'west-bengal','andhra-pradesh','uttar-pradesh','sikkim','madhya-pradesh','odisha','karnataka','tripura','goa','haryana',
+                          'andaman-&-nicobar-islands','telangana','arunachal-pradesh','dadra-&-nagar-haveli-&-daman-&-diu','assam','bihar']
+          state = st.selectbox("State",Topic)
 
         if choice_topic == "Aggregated":   
               st.title('Aggregrated_Transaction')          
-              mycursor.execute(f"SELECT State,Transaction_amount,Total_transaction,Transaction_type FROM aggregated_transactions  where Year = {year} and Quarter = {quarter} order by transaction_amount desc limit 10")
+              mycursor.execute(f"SELECT sum(Transaction_amount) as Transaction_amount,sum(Total_transaction) as Total_transaction,Transaction_type FROM aggregated_transactions  where Year = {year} and Quarter = {quarter} and State = '{state}' group by Transaction_type")
               records1 = mycursor.fetchall()
               aggregated_transactions = pd.DataFrame(records1,
                                               columns=[i[0] for i  in mycursor.description])
               st.dataframe(aggregated_transactions)
 
-
               df = px.bar(aggregated_transactions,
-                                                  x = 'state',
+                                                  x = 'transaction_type',
                                                   y = 'total_transaction',
-                                                  color = 'state',  
+                                                  color = 'transaction_type',  
                                                   color_continuous_scale='oranges' )
               df.update_traces(width = 0.8)
               st.plotly_chart(df) 
@@ -67,12 +69,12 @@ if main== "Visualization":
               fig = px.scatter (aggregated_transactions,
                                 x = 'transaction_type', 
                                 y = 'total_transaction',
-                                color = 'state')
+                                color = 'transaction_type')
               st.plotly_chart(fig)
 
         if choice_topic == "Map":  
               st.title("Map_Transactions")                      
-              mycursor.execute(f"SELECT State,District ,User_Count,Total_Amount FROM map_transactions where Year = {year} and Quarter = {quarter} order by Total_Amount desc limit 10")
+              mycursor.execute(f"SELECT District ,User_Count,Total_Amount FROM map_transactions where Year = {year} and Quarter = {quarter} and state = '{state}' order by Total_Amount desc limit 10")
               records2 = mycursor.fetchall()
               map_transactions = pd.DataFrame(records2,
                                               columns=[i[0] for i  in mycursor.description])
@@ -81,21 +83,21 @@ if main== "Visualization":
               df2 = px.bar(map_transactions,
                                                   x = 'district',
                                                   y = 'user_count',
-                                                  color = 'state',
+                                                  color = 'district',
                                                   color_continuous_scale='blue' )
               df2.update_traces(width = 0.8)
               st.plotly_chart(df2) 
               
               fig1 = px.scatter (map_transactions,
-                                x = 'district', 
+                                x = 'total_amount', 
                                 y = 'user_count',
-                                color = 'total_amount')
+                                color = 'district')
               st.plotly_chart(fig1)
 
           
         if choice_topic == "Top": 
               st.title('Top_Transaction')            
-              mycursor.execute(f"SELECT State,District ,topuser_Count,Amount FROM top_transactions where Year = {year} and Quarter = {quarter} order by Amount desc limit 10")
+              mycursor.execute(f"SELECT District,topuser_Count,Amount FROM top_transactions where Year = {year} and Quarter = {quarter} and State = '{state}' order by Amount desc limit 10")
               records3 = mycursor.fetchall()
               top_transactions = pd.DataFrame(records3,
                                               columns=[i[0] for i  in mycursor.description])
@@ -104,15 +106,15 @@ if main== "Visualization":
               df3 = px.bar(top_transactions,
                                                   x = 'district',
                                                   y = 'topuser_count',
-                                                  color = 'state',
+                                                  color = 'district',
                                                   color_continuous_scale='blue' )
               df3.update_traces(width = 0.8)
               st.plotly_chart(df3) 
               
               fig2 = px.scatter (top_transactions,
-                                x = 'district', 
+                                x = 'amount', 
                                 y = 'topuser_count',
-                                color = 'amount')
+                                color = 'district')
               st.plotly_chart(fig2)              
    
    if main1 == "Users":
@@ -125,10 +127,16 @@ if main== "Visualization":
           year = st.selectbox("Year",Topic)
           Topic = ["1","2","3","4"]
           quarter = st.selectbox("Quarter",Topic)
-         
+          Topic = ['ladakh','nagaland''chhattisgarh','jammu-&-kashmir','gujarat','lakshadweep','uttarakhand','punjab','chandigarh','maharashtra',
+                          'jharkhand','delhi','kerala','tamil-nadu','meghalaya', 'puducherry', 'himachal-pradesh','mizoram','manipur','rajasthan',
+                          'west-bengal','andhra-pradesh','uttar-pradesh','sikkim','madhya-pradesh','odisha','karnataka','tripura','goa','haryana',
+                          'andaman-&-nicobar-islands','telangana','arunachal-pradesh','dadra-&-nagar-haveli-&-daman-&-diu','assam','bihar']
+          state = st.selectbox("State",Topic)
+
+
         if select_topic == "Aggregated": 
                     st.title('Aggregated_User')            
-                    mycursor.execute(f"SELECT State,User_brand,User_Count,User_Percentage FROM aggregated_user1  where Year = {year} and Quarter = {quarter} order by user_count desc limit 10")
+                    mycursor.execute(f"SELECT User_brand,User_Count,User_Percentage FROM aggregated_user1  where Year = {year} and Quarter = {quarter} and state = '{state}'order by user_count desc limit 10")
                     records4 = mycursor.fetchall()
                     aggregated_user1 = pd.DataFrame(records4,
                                                     columns=[i[0] for i  in mycursor.description])
@@ -136,10 +144,10 @@ if main== "Visualization":
 
             
             
-                    fig = go.Figure(go.Scatter( x=aggregated_user1['state'],
+                    fig = go.Figure(go.Scatter( x=aggregated_user1['user_count'],
                                                 y=aggregated_user1['user_brand'], 
                                                 mode='markers+text+lines',
-                                                text=aggregated_user1['user_count'],
+                                                text=aggregated_user1['user_percentage'],
                                                 textposition="bottom left"))
                     st.plotly_chart(fig)
 
@@ -148,14 +156,13 @@ if main== "Visualization":
 
         if select_topic == "Map":
                     st.title("Map_Users")             
-                    mycursor.execute(f"SELECT State,District,Registered_user,App_open  FROM map_users  where Year = {year} and Quarter = {quarter} order by App_open desc limit 10")
+                    mycursor.execute(f"SELECT District,Registered_user,App_open  FROM map_users  where Year = {year} and Quarter = {quarter} and State = '{state}' order by App_open desc limit 10")
                     records5 = mycursor.fetchall()
                     map_users = pd.DataFrame(records5,
                                                     columns=[i[0] for i  in mycursor.description])
                     st.dataframe(map_users)
 
-            
-            
+              
                     fig = go.Figure(go.Scatter( x=map_users['district'],
                                                 y=map_users['registered_user'], 
                                                 mode='markers+text+lines',
@@ -163,12 +170,12 @@ if main== "Visualization":
                                                 textposition="bottom left"))
                     st.plotly_chart(fig)
 
-                    fig = px.pie(map_users, names = "state",values = "registered_user")
+                    fig = px.pie(map_users, names = "district",values = "registered_user")
                     st.plotly_chart(fig)
 
         if select_topic == "Top": 
                     st.title("Top_Users")            
-                    mycursor.execute(f"SELECT State,District,Registered_user  FROM top_users  where Year = {year} and Quarter = {quarter} order by Registered_user desc limit 10")
+                    mycursor.execute(f"SELECT District,Registered_user  FROM top_users  where Year = {year} and Quarter = {quarter}  and state = '{state}' order by Registered_user desc limit 10")
                     records6 = mycursor.fetchall()
                     top_users = pd.DataFrame(records6,
                                                     columns=[i[0] for i  in mycursor.description])
@@ -177,11 +184,11 @@ if main== "Visualization":
                     fig = go.Figure(go.Scatter( x=top_users['district'],
                                                 y=top_users['registered_user'], 
                                                 mode='markers+text+lines',
-                                                text=top_users['state'],
+                                                text=top_users['district'],
                                                 textposition="bottom left"))
                     st.plotly_chart(fig)
 
-                    fig = px.pie(top_users, names = "state",values = "registered_user")
+                    fig = px.pie(top_users, names = "district",values = "registered_user")
                     st.plotly_chart(fig)
 
 if main == "Map_Visualization":
